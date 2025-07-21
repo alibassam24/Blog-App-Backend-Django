@@ -1,0 +1,16 @@
+# Python cache files
+__pycache__/
+*.py[cod]
+
+# Virtual environment folder
+.venv/
+venv/
+
+# Django migrations (optional, if you want to keep them)
+*/migrations/
+
+# Environment variables files
+.env
+
+# VSCode workspace settings
+.vscode/
