@@ -9,8 +9,8 @@ class CreateUserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        # fields='__all__'
-        fields = ["username", "age", "bio", "email"]
+        fields='__all__'
+       # fields = ["username", "age", "bio", "email"]
         read_only_fields = ["id"]
 
     def validate(self, data):
@@ -35,3 +35,13 @@ class BlogSerializer(serializers.ModelSerializer):
         model = Blog
         fields = "__all__"
         read_only_fields = ["id", "author_id", "created_at", "updated_at"]
+
+    def validate(self, data):
+        id=User.objects.get("id","")
+        content=User.objects.get("content","")
+        
+        if not content:
+            raise serializers.ValidationError("Blog cannot be empty")
+        if Blog.objects.filter(content=content).exists():
+            raise serializers.ValidationError("Blog alreadr exists")
+

@@ -12,6 +12,9 @@ class User(AbstractUser):
     age = models.PositiveIntegerField(null=True, blank=True)
     # default id and password from AbstractUser
 
+    def __str__(self):
+        return self.username
+
 
 class Blog(models.Model):
     id = models.AutoField(primary_key=True)
@@ -22,3 +25,7 @@ class Blog(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     content = models.CharField(max_length=2000)
+
+    
+    def __str__(self):
+        return self.title

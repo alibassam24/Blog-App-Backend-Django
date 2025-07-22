@@ -8,6 +8,7 @@ from rest_framework.decorators import (
 )
 from rest_framework.response import Response
 from rest_framework_simplejwt.authentication import JWTAuthentication
+from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.tokens import AccessToken, RefreshToken
 
 from .serializers import BlogSerializer, CreateUserSerializer
@@ -52,3 +53,14 @@ def login_user(request):
             {"Status": "Failed", "Message": "Invalid Credentials"},
             status=status.HTTP_400_BAD_REQUEST,
         )
+    
+@api_view("POST")
+@authentication_classes([JWTAuthentication])
+@permission_classes([IsAuthenticated])
+def create_blog(request):
+    serializer=BlogSerializer(data=request.data)
+    if serializer.is_valid():
+        serializer.save()
+        return Response({"Status":"Data","Message":"Blog created","Data":serializer.data})
+    else:
+        return Response({"Status":"Success","Message":"Invalid Data"})
