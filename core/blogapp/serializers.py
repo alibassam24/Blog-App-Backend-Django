@@ -9,7 +9,8 @@ class CreateUserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model=User  
-        fields='__all__'
+        # fields='__all__'
+        fields=["username", "age", "bio", "email"]
         read_only_fields=['id']
 
     def validate(self, data):
@@ -34,4 +35,5 @@ class BlogSerializer(serializers.ModelSerializer):
         fields='__all__'
         read_only_fields=['id','author_id','created_at','updated_at']
 
-   
+    
+    
