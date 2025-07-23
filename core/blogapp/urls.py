@@ -8,5 +8,6 @@ urlpatterns = [
     # path("token/", TokenObtainPairView.as_view(), name="token"),
     # path("token/refresh/", TokenRefreshView.as_view(), name="refresh"),
     path("login-user/", login_user, name="login-user"),
-    path("create-blog/",create_blog,name="create-blog")
+    path("create-blog/", create_blog, name="create-blog"),
+    path("view-blogs/",view_blogs,name="view-blogs"),
 ]
