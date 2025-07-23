@@ -6,12 +6,13 @@ from rest_framework.decorators import (
     authentication_classes,
     permission_classes,
 )
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework_simplejwt.authentication import JWTAuthentication
-from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.tokens import AccessToken, RefreshToken
 
 from .serializers import BlogSerializer, CreateUserSerializer
+from .models import *
 
 # Create your views here.
 
@@ -20,8 +21,12 @@ from .serializers import BlogSerializer, CreateUserSerializer
 @api_view(["POST"])
 def create_user(request):
     serializer = CreateUserSerializer(data=request.data)
+    password=request.data.get("password")
     if serializer.is_valid():
-        serializer.save()
+        
+        user=serializer.save()
+        user.set_password(password)
+        user.save()
         return Response(
             {"Status": "Success", "Message": "User Created", "Data": serializer.data},
             status=status.HTTP_201_CREATED,
@@ -33,34 +38,53 @@ def create_user(request):
         )
 
 
-# user login
+ # user login
 @api_view(["POST"])
-##not needed here@authentication_classes([JWTAuthentication])
+    ##not needed here@authentication_classes([JWTAuthentication])
 def login_user(request):
-    username = request.data.get("username", "")
-    password = request.data.get("password", "")
+        username = request.data.get("username", "")
+        password = request.data.get("password", "")
+        
+        user = authenticate(username=username, password=password)
 
-    user = authenticate(username=username, password=password)
+        if user is not None:
+            refresh = RefreshToken.for_user(user)
+            access = AccessToken.for_user(user)
+            return Response(
+                {"refresh": str(refresh), "access": str(access)}, status=status.HTTP_200_OK
+            )
+        else:
+            return Response(
+                {"Status": "Failed", "Message": "Invalid Credentials"},
+            # status=status.HTTP_400_BAD_REQUEST,
+            )
 
-    if user is not None:
-        refresh = RefreshToken.for_user(user)
-        access = AccessToken.for_user(user)
-        return Response(
-            {"refresh": str(refresh), "access": str(access)}, status=status.HTTP_200_OK
-        )
-    else:
-        return Response(
-            {"Status": "Failed", "Message": "Invalid Credentials"},
-            status=status.HTTP_400_BAD_REQUEST,
-        )
-    
-@api_view("POST")
+
+@api_view(["POST"])
 @authentication_classes([JWTAuthentication])
 @permission_classes([IsAuthenticated])
 def create_blog(request):
-    serializer=BlogSerializer(data=request.data)
+    data=request.data.copy()
+    data["author_id"]=request.user.id
+    serializer=BlogSerializer(data=data)
     if serializer.is_valid():
         serializer.save()
-        return Response({"Status":"Data","Message":"Blog created","Data":serializer.data})
+        return Response(
+            {"Status": "Success", "Message": "Blog created", "Data": serializer.data},
+            status=status.HTTP_200_OK
+        )
     else:
-        return Response({"Status":"Success","Message":"Invalid Data"})
+        return Response({"Status": "Failed", "Message": "Invalid Data","error":serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(["GET"])
+@authentication_classes([JWTAuthentication])
+@permission_classes([IsAuthenticated])
+def view_blogs(request):
+    blogs=Blog.objects.all()
+    serializer = BlogSerializer(blogs, many=True)
+    
+    if not blogs.exists():
+         return Response({"Status":"Failed","Message":"No records found"})
+    else: 
+        return Response({"Status":"Success","Message":"All pages fetched","Data":serializer.data}, status=status.HTTP_200_OK)
+    
