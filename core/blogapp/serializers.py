@@ -18,7 +18,7 @@ class CreateUserSerializer(serializers.ModelSerializer):
         username = data.get("username", "").lower()
         bio = data.get("bio", "").lower()
         email = data.get("email", "").lower()
-        
+
         if age < 18:
             raise serializers.ValidationError("User must be 18 or above")
         if username == User.objects.filter(username=username).exists():
@@ -28,20 +28,20 @@ class CreateUserSerializer(serializers.ModelSerializer):
         if User.objects.filter(email=email).exists():
             raise serializers.ValidationError("Email already exists")
         return data
-        
+
 
 class BlogSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Blog
-      #  fields = ["title","content"]
-        fields='__all__'
+        #  fields = ["title","content"]
+        fields = "__all__"
         read_only_fields = ["id", "created_at", "updated_at"]
 
     def validate(self, data):
-        #id = .objects.get("id", "")
-        content = data.get("content","")
-        title = data.get("title","")
+        # id = .objects.get("id", "")
+        content = data.get("content", "")
+        title = data.get("title", "")
         if not title:
             raise serializers.ValidationError("Title cannot be empty")
         if not content:

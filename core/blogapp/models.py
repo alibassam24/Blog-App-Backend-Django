@@ -18,9 +18,7 @@ class User(AbstractUser):
 
 class Blog(models.Model):
     id = models.AutoField(primary_key=True)
-    author_id = models.ForeignKey(
-        User, to_field="id", on_delete=models.CASCADE
-    )
+    author_id = models.ForeignKey(User, to_field="id", on_delete=models.CASCADE)
     title = models.CharField(max_length=60)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
