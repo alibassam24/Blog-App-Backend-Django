@@ -109,6 +109,8 @@ def view_blogs(request):
 @permission_classes([IsAuthenticated])
 @authentication_classes([JWTAuthentication])
 def delete_blog(request, id):
+    if not id:
+        return Response({"status":"failed", "message":"missing required fields"})
     try:
         blog = Blog.objects.get(id=id)
     except Blog.DoesNotExist:
@@ -120,3 +122,29 @@ def delete_blog(request, id):
     return Response(
         {"Status": "Success", "Message": "Blog Deleted"}, status=status.HTTP_200_OK
     )
+
+
+@api_view(["GET"])
+#@permission_classes([IsAuthenticated])
+#@authentication_classes([JWTAuthentication])
+def search_blogs(request):
+    title=request.GET.get("title","")
+    paginator=PageNumberPagination()
+    blogs=Blog.objects.filter(title__icontains=title)
+    if blogs.exists():
+        page=paginator.paginate_queryset(blogs,request)
+        serializer=BlogSerializer(page, many=True)
+    
+        return paginator.get_paginated_response({"Status":"Success","Message":"Search Implemented","Data":serializer.data})
+            #return Response({"Status":"Success","Message":"Blog Found","Data":serializer.data}, status=status.HTTP_200_OK)
+    else:
+        return Response({"Status":"Failed","Message":"Blog not found"})
+            #return Response({"Status":"Failed","Message":"No blog with title exists"},status=status.HTTP_400_BAD_REQUEST)
+    
+   #if not title: 
+   #blogs=Blog.objects.filter(title__icontains=title)
+   #serializer=BlogSerializer(blogs,many=True) 
+   #if blogs.exists():
+    #   return Response({"Status":"Success","Message":"Blog Found","Data":serializer.data}, status=status.HTTP_200_OK)
+   #else:
+    #   return Response({"Status":"Failed","Message":"No blog with title exists"},status=status.HTTP_400_BAD_REQUEST)
