@@ -182,9 +182,9 @@ def update_blog(request, id):
     try:
 
         blogs = Blog.objects.get(id=id)
-        blogs.title = title
-        blogs.content = content
-        blogs.save()
+       # blogs.title = title
+       # blogs.content = content
+       # blogs.save()
         ## need to pass data with serializer too
         serializer = UpdateBlogSerializer(blogs,data=request.data)
         if serializer.is_valid():
