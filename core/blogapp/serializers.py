@@ -49,3 +49,19 @@ class BlogSerializer(serializers.ModelSerializer):
         if Blog.objects.filter(content=content).exists():
             raise serializers.ValidationError("Blog already exists")
         return data
+
+
+class UpdateBlogSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Blog
+        fields = ["title", "content"]
+
+    def validate(self, data):
+        content = data.get("content", "")
+        title = data.get("title", "")
+        if not title:
+            raise serializers.ValidationError("Title cannot be empty")
+        if not content:
+            raise serializers.ValidationError("Blog cannot be empty")
+        return data

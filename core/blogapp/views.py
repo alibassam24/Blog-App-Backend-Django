@@ -1,3 +1,4 @@
+from django.contrib.auth import logout
 from django.shortcuts import render
 from rest_framework import status
 from rest_framework.authentication import authenticate
@@ -13,7 +14,7 @@ from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework_simplejwt.tokens import AccessToken, RefreshToken
 
 from .models import *
-from .serializers import BlogSerializer, CreateUserSerializer
+from .serializers import BlogSerializer, CreateUserSerializer, UpdateBlogSerializer
 
 # Create your views here.
 
@@ -59,6 +60,16 @@ def login_user(request):
             {"Status": "Failed", "Message": "Invalid Credentials"},
             # status=status.HTTP_400_BAD_REQUEST,
         )
+
+
+# session auth logout uses logout()
+#jwt logout functionality to be added 
+# @api_view([])
+# @permission_classes([IsAuthenticated])
+# @authentication_classes([JWTAuthentication])
+# def logout_user(request):
+#     logout(request)
+#     return Response({"Status":"Success","Message":"User logged out successfully"})
 
 
 @api_view(["POST"])
@@ -110,7 +121,7 @@ def view_blogs(request):
 @authentication_classes([JWTAuthentication])
 def delete_blog(request, id):
     if not id:
-        return Response({"status":"failed", "message":"missing required fields"})
+        return Response({"status": "failed", "message": "missing required fields"})
     try:
         blog = Blog.objects.get(id=id)
     except Blog.DoesNotExist:
@@ -125,26 +136,69 @@ def delete_blog(request, id):
 
 
 @api_view(["GET"])
-#@permission_classes([IsAuthenticated])
-#@authentication_classes([JWTAuthentication])
+# @permission_classes([IsAuthenticated])
+# @authentication_classes([JWTAuthentication])
 def search_blogs(request):
-    title=request.GET.get("title","")
-    paginator=PageNumberPagination()
-    blogs=Blog.objects.filter(title__icontains=title)
+    title = request.GET.get("title", "")
+    paginator = PageNumberPagination()
+    blogs = Blog.objects.filter(title__icontains=title)
     if blogs.exists():
-        page=paginator.paginate_queryset(blogs,request)
-        serializer=BlogSerializer(page, many=True)
-    
-        return paginator.get_paginated_response({"Status":"Success","Message":"Search Implemented","Data":serializer.data})
-            #return Response({"Status":"Success","Message":"Blog Found","Data":serializer.data}, status=status.HTTP_200_OK)
+        page = paginator.paginate_queryset(blogs, request)
+        serializer = BlogSerializer(page, many=True)
+
+        return paginator.get_paginated_response(
+            {
+                "Status": "Success",
+                "Message": "Search Implemented",
+                "Data": serializer.data,
+            }
+        )
+        # return Response({"Status":"Success","Message":"Blog Found","Data":serializer.data}, status=status.HTTP_200_OK)
     else:
-        return Response({"Status":"Failed","Message":"Blog not found"})
-            #return Response({"Status":"Failed","Message":"No blog with title exists"},status=status.HTTP_400_BAD_REQUEST)
-    
-   #if not title: 
-   #blogs=Blog.objects.filter(title__icontains=title)
-   #serializer=BlogSerializer(blogs,many=True) 
-   #if blogs.exists():
-    #   return Response({"Status":"Success","Message":"Blog Found","Data":serializer.data}, status=status.HTTP_200_OK)
-   #else:
-    #   return Response({"Status":"Failed","Message":"No blog with title exists"},status=status.HTTP_400_BAD_REQUEST)
+        return Response({"Status": "Failed", "Message": "Blog not found"})
+        # return Response({"Status":"Failed","Message":"No blog with title exists"},status=status.HTTP_400_BAD_REQUEST)
+
+
+# if not title:
+# blogs=Blog.objects.filter(title__icontains=title)
+# serializer=BlogSerializer(blogs,many=True)
+# if blogs.exists():
+#   return Response({"Status":"Success","Message":"Blog Found","Data":serializer.data}, status=status.HTTP_200_OK)
+# else:
+#   return Response({"Status":"Failed","Message":"No blog with title exists"},status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(["PATCH"])
+# @permission_classes([IsAuthenticated])
+# @authentication_classes([JWTAuthentication])
+def update_blog(request, id):
+    title = request.data.get("title", "")
+    if not title:
+        return Response({"status": "failed", "message": "title missing"})
+
+    content = request.data.get("content", "")
+    if not content:
+        return Response({"status": "failed", "message": "content missing"})
+    try:
+
+        blogs = Blog.objects.get(id=id)
+        blogs.title = title
+        blogs.content = content
+        blogs.save()
+        ## need to pass data with serializer too
+        serializer = UpdateBlogSerializer(blogs,data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(
+                {
+                    "Status": "Success",
+                    "Message": "Blog updated",
+                    "Data": serializer.data,
+                },
+                status=status.HTTP_200_OK,
+            )
+    except Blog.DoesNotExist:
+        return Response(
+            {"Status": "Failed", "Message": "Blog not found"},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
