@@ -41,6 +41,7 @@ source env/bin/activate  # For Windows: env\Scripts\activate
 pip install -r requirements.txt
 
 # Run migrations
+python manage.py makemigrations
 python manage.py migrate
 
 # Start development server
