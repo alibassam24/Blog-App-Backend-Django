@@ -45,8 +45,9 @@ python manage.py migrate
 
 # Start development server
 python manage.py runserver
+```
 
-##🙋‍♂️ Author
+## 🙋‍♂️ Author
 Ali Bassam
 📧 alibassam063@gmail.com
 🔗 https:www.linkedin.com/in/alibassam1
