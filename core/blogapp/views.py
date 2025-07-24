@@ -6,6 +6,7 @@ from rest_framework.decorators import (
     authentication_classes,
     permission_classes,
 )
+from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework_simplejwt.authentication import JWTAuthentication
@@ -84,17 +85,38 @@ def create_blog(request):
 @authentication_classes([JWTAuthentication])
 @permission_classes([IsAuthenticated])
 def view_blogs(request):
+    paginator = PageNumberPagination()
     blogs = Blog.objects.all()
-    serializer = BlogSerializer(blogs, many=True)
+    page = paginator.paginate_queryset(blogs, request)
+    serializer = BlogSerializer(page, many=True)
 
     if not blogs.exists():
-        return Response({"Status": "Failed", "Message": "No records found"})
-    else:
         return Response(
+            {"Status": "Failed", "Message": "No records found"},
+            status=status.HTTP_404_NOT_FOUND,
+        )
+    else:
+        return paginator.get_paginated_response(
             {
                 "Status": "Success",
                 "Message": "All pages fetched",
                 "Data": serializer.data,
-            },
-            status=status.HTTP_200_OK,
+            }
         )
+
+
+@api_view(["DELETE"])
+@permission_classes([IsAuthenticated])
+@authentication_classes([JWTAuthentication])
+def delete_blog(request, id):
+    try:
+        blog = Blog.objects.get(id=id)
+    except Blog.DoesNotExist:
+        return Response(
+            {"Status": "Failed", "Message": "Blog not found"},
+            status=status.HTTP_404_NOT_FOUND,
+        )
+    blog.delete()
+    return Response(
+        {"Status": "Success", "Message": "Blog Deleted"}, status=status.HTTP_200_OK
+    )
