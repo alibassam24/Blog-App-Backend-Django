@@ -1,0 +1,80 @@
+# Python cache files
+__pycache__/
+*.py[cod]
+
+# Virtual environment folder
+.venv/
+venv/
+
+# Django migrations (optional, if you want to keep them)
+*/migrations/
+
+# Environment variables files
+.env
+
+# VSCode workspace settings
+.vscode/
+
+# Python
+*.py[cod]
+__pycache__/
+*.so
+
+# Virtual environment
+venv/
+env/
+ENV/
+.venv/
+
+# Django stuff
+*.log
+*.pot
+*.pyc
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+media/
+staticfiles/
+
+# dotenv
+.env
+
+# VS Code
+.vscode/
+
+# macOS
+.DS_Store
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# PyCharm
+.idea/
+
+# Coverage reports
+htmlcov/
+.coverage
+.coverage.*
+
+# Migrations (optional – remove this if you want to track migrations)
+# **/migrations/
+
+# Test results
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+
+# Sphinx documentation
+docs/_build/
+
+# MyPy
+.mypy_cache/
+
+# Pytest
+.pytest_cache/
+
+# Node (if using for frontend)
+node_modules/
