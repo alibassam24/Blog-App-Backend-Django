@@ -2,7 +2,7 @@ from rest_framework import serializers
 from rest_framework.response import Response
 from rest_framework.serializers import ModelSerializer
 
-from .models import Blog, User
+from .models import Blog, User, Comment
 
 
 class CreateUserSerializer(serializers.ModelSerializer):
@@ -65,3 +65,12 @@ class UpdateBlogSerializer(serializers.ModelSerializer):
         if not content:
             raise serializers.ValidationError("Blog cannot be empty")
         return data
+
+class CommentSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model=Comment
+        fields=["content"]
+        read_only_field=['created_at','updated_at','blog','user']
+
+
