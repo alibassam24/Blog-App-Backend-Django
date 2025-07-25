@@ -25,7 +25,6 @@ def create_user(request):
     serializer = CreateUserSerializer(data=request.data)
     password = request.data.get("password")
     if serializer.is_valid():
-
         user = serializer.save()
         user.set_password(password)
         user.save()
@@ -79,7 +78,7 @@ def create_blog(request):
     data = request.data.copy()
     data["author_id"] = request.user.id
     serializer = BlogSerializer(data=data)
-    if serializer.is_valid():
+    if serializer.is_valid():   
         serializer.save()
         return Response(
             {"Status": "Success", "Message": "Blog created", "Data": serializer.data},
@@ -169,8 +168,8 @@ def search_blogs(request):
 
 
 @api_view(["PATCH"])
-# @permission_classes([IsAuthenticated])
-# @authentication_classes([JWTAuthentication])
+@permission_classes([IsAuthenticated])
+@authentication_classes([JWTAuthentication])
 def update_blog(request, id):
     title = request.data.get("title", "")
     if not title:

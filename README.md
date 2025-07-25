@@ -30,7 +30,7 @@ A minimal RESTful Blog API built with **Django REST Framework** and **JWT Authen
 
 ```bash
 # Clone the repo
-git clone https://github.com/your-username/django-blog-api.git
+git clone https://github.com/alibassam24/Blog-App-Backend-Django.git
 cd django-blog-api
 
 # Create virtual environment
