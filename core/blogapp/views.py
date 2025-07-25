@@ -14,11 +14,11 @@ from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework_simplejwt.tokens import AccessToken, RefreshToken
 
 from .models import *
-from .serializers import BlogSerializer, CreateUserSerializer, UpdateBlogSerializer
+from .serializers import BlogSerializer, CreateUserSerializer, UpdateBlogSerializer, CommentSerializer
 
 # Create your views here.
 
-
+#USER_________________________________________________________________________________________________________
 # Api to create a user
 @api_view(["POST"])
 def create_user(request):
@@ -71,6 +71,8 @@ def logout_user(request):
     return Response({"Status":"Success","Message":"User logged out successfully"})
 
  """
+
+##BLOGS_________________________________________________________________________________________________
 @api_view(["POST"])
 @authentication_classes([JWTAuthentication])
 @permission_classes([IsAuthenticated])
@@ -201,3 +203,23 @@ def update_blog(request, id):
             {"Status": "Failed", "Message": "Blog not found"},
             status=status.HTTP_400_BAD_REQUEST,
         )
+
+
+#COMMENTS______________________________________________________________________________________________________
+
+@api_view(["GET"])
+def view_comments_on_blog(request,id):
+    if not id:
+        return Response({"Status":"Failed","Message":"Missing id"})
+    else:
+        try:
+            blog_id=Blog.objects.get(id=id)
+            comments=Comment.objects.filter(blog=blog_id)
+            if comments.exists():
+                serializer= CommentSerializer(comments,many=True)
+                return Response({"Status":"Success","Message":"Comments found","Data":serializer.data})
+            else: 
+                return Response({"Status":"Failed","Message":"No comments on blog"})
+        except Blog.DoesNotExist:
+            return Response({"Status":"Failed","Message":"Blog not found with id"})
+        
