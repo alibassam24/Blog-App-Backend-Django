@@ -60,17 +60,17 @@ def login_user(request):
             # status=status.HTTP_400_BAD_REQUEST,
         )
 
+"""
+session auth logout uses logout()
+jwt logout functionality to be added 
+ @api_view(["POST"])
+@permission_classes([IsAuthenticated])
+@authentication_classes([JWTAuthentication])
+def logout_user(request):
+    logout(request)
+    return Response({"Status":"Success","Message":"User logged out successfully"})
 
-# session auth logout uses logout()
-#jwt logout functionality to be added 
-# @api_view([])
-# @permission_classes([IsAuthenticated])
-# @authentication_classes([JWTAuthentication])
-# def logout_user(request):
-#     logout(request)
-#     return Response({"Status":"Success","Message":"User logged out successfully"})
-
-
+ """
 @api_view(["POST"])
 @authentication_classes([JWTAuthentication])
 @permission_classes([IsAuthenticated])
@@ -135,8 +135,8 @@ def delete_blog(request, id):
 
 
 @api_view(["GET"])
-# @permission_classes([IsAuthenticated])
-# @authentication_classes([JWTAuthentication])
+@permission_classes([IsAuthenticated])
+@authentication_classes([JWTAuthentication])
 def search_blogs(request):
     title = request.GET.get("title", "")
     paginator = PageNumberPagination()
