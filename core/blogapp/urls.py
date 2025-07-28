@@ -14,6 +14,7 @@ urlpatterns = [
     path("delete-blog/<int:id>/", delete_blog, name="delete-blog"),
     path("search-blogs/", search_blogs, name="search-blogs"),
     path("update-blog/<int:id>", update_blog, name="update-blog"),
+    path("view-blogs-by-user/", view_blogs_by_user, name="view-blogs-by-user"),
     path("create-comment/", create_comment, name="create-comment"),
     path(
         "view-comments-on-blog/<int:blog_id>/",

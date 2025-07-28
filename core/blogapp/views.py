@@ -26,6 +26,8 @@ from .serializers import (
 
 
 # USER_________________________________________________________________________________________________________
+
+
 # Api to create a user
 @api_view(["POST"])
 def create_user(request):
@@ -82,6 +84,8 @@ def logout_user(request):
 
 
 ##BLOGS_________________________________________________________________________________________________
+
+
 @api_view(["POST"])
 @authentication_classes([JWTAuthentication])
 @permission_classes([IsAuthenticated])
@@ -169,6 +173,21 @@ def search_blogs(request):
         # return Response({"Status":"Failed","Message":"No blog with title exists"},status=status.HTTP_400_BAD_REQUEST)
 
 
+@api_view(["GET"])
+@authentication_classes([JWTAuthentication])
+@permission_classes([IsAuthenticated])
+def view_blogs_by_user(request):
+    user = request.user.id
+    if Blog.objects.filter(author_id=user).exists():
+        blogs = Blog.objects.filter(author_id=user)
+        serializer = BlogSerializer(blogs, many=True)
+        return Response(
+            {"Status": "Success", "Message": "blogs found", "Data": serializer.data}
+        )
+    else:
+        return Response({"sttatus": "failed", "message": "no blogs exist"})
+
+
 # if not title:
 # blogs=Blog.objects.filter(title__icontains=title)
 # serializer=BlogSerializer(blogs,many=True)
@@ -206,6 +225,15 @@ def update_blog(request, id):
                     "Data": serializer.data,
                 },
                 status=status.HTTP_200_OK,
+            )
+        else:
+            return Response(
+                {
+                    "Status": "Failed",
+                    "Message": "Invalid Data",
+                    "Errors": serializer.errors,
+                },
+                status=status.HTTP_400_BAD_REQUEST,
             )
     except Blog.DoesNotExist:
         return Response(
