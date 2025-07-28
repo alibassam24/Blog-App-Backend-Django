@@ -180,10 +180,13 @@ def view_blogs_by_user(request):
     user = request.user.id
     if Blog.objects.filter(author_id=user).exists():
         blogs = Blog.objects.filter(author_id=user)
-        serializer = BlogSerializer(blogs, many=True)
-        return Response(
-            {"Status": "Success", "Message": "blogs found", "Data": serializer.data}
+        paginator = PageNumberPagination()
+        page = paginator.paginate_queryset(blogs, request)
+        serializer = BlogSerializer(page, many=True)
+        return paginator.get_paginated_response(
+            {"Status": "Success", "Message": "Blog Found", "Data": serializer.data},
         )
+    # return Response({"Status":"Success","Message":"blogs found","Data":serializer.data})
     else:
         return Response({"sttatus": "failed", "message": "no blogs exist"})
 
