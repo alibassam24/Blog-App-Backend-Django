@@ -29,11 +29,11 @@ class Blog(models.Model):
 
 
 class Comment(models.Model):
-    user=models.ForeignKey(User, to_field="id",on_delete=models.CASCADE)
-    blog=models.ForeignKey(Blog, to_field="id",on_delete=models.CASCADE)
-    content=models.CharField(max_length=500)
-    created_at=models.TimeField(auto_now_add=True)
-    updated_at=models.TimeField(auto_now=True)
+    user = models.ForeignKey(User, to_field="id", on_delete=models.CASCADE)
+    blog = models.ForeignKey(Blog, to_field="id", on_delete=models.CASCADE)
+    content = models.CharField(max_length=500)
+    created_at = models.TimeField(auto_now_add=True)
+    updated_at = models.TimeField(auto_now=True)
 
     def __str__(self):
-        return (f"{self.user.username} : {self.content}") 
+        return f"{self.user.username} : {self.content}"

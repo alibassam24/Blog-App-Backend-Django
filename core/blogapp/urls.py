@@ -9,12 +9,15 @@ urlpatterns = [
     path("token/refresh/", TokenRefreshView.as_view(), name="refresh"),
     path("login-user/", login_user, name="login-user"),
     # path("logout-user/",logout_user,name="logout-user"),
-
     path("create-blog/", create_blog, name="create-blog"),
     path("view-blogs/", view_blogs, name="view-blogs"),
     path("delete-blog/<int:id>/", delete_blog, name="delete-blog"),
     path("search-blogs/", search_blogs, name="search-blogs"),
     path("update-blog/<int:id>", update_blog, name="update-blog"),
-
-    path("view-comments-on-blog/<int:id>/",view_comments_on_blog,name="view-comments-on-blog")
+    path("create-comment/", create_comment, name="create-comment"),
+    path(
+        "view-comments-on-blog/<int:blog_id>/",
+        view_comments_on_blog,
+        name="view-comments-on-blog",
+    ),
 ]
