@@ -2,7 +2,7 @@ from rest_framework import serializers
 from rest_framework.response import Response
 from rest_framework.serializers import ModelSerializer
 
-from .models import Blog, User, Comment
+from .models import Blog, Comment, User
 
 
 class CreateUserSerializer(serializers.ModelSerializer):
@@ -66,11 +66,29 @@ class UpdateBlogSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("Blog cannot be empty")
         return data
 
-class CommentSerializer(serializers.ModelSerializer):
+
+class CreateCommentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Comment
+        fields = ["user", "blog", "content"]
+        read_only_fields = ["created_at", "updated_at"]
+
+    def validate(self, data):
+        user = data.get("user")
+        blog = data.get("blog")
+        comment_content = data.get("content", "")
+        # if not isinstance(user,User):      <--------------Handled already by model serializer--------------->
+        # raise serializers.ValidationError("User does not exist")
+        # if not isinstance(blog,Blog):
+        #       raise serializers.ValidationError("Blog Does not Exist")
+        if not comment_content:
+            raise serializers.ValidationError("Comment cannot be empty")
+        return data
+
+
+class ViewCommentSerializer(serializers.ModelSerializer):
 
     class Meta:
-        model=Comment
-        fields=["content"]
-        read_only_field=['created_at','updated_at','blog','user']
-
-
+        model = Comment
+        fields = ["content", "user"]
+        read_only_field = ["created_at", "updated_at", "blog"]

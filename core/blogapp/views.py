@@ -14,11 +14,18 @@ from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework_simplejwt.tokens import AccessToken, RefreshToken
 
 from .models import *
-from .serializers import BlogSerializer, CreateUserSerializer, UpdateBlogSerializer, CommentSerializer
+from .serializers import (
+    BlogSerializer,
+    CreateCommentSerializer,
+    CreateUserSerializer,
+    UpdateBlogSerializer,
+    ViewCommentSerializer,
+)
 
 # Create your views here.
 
-#USER_________________________________________________________________________________________________________
+
+# USER_________________________________________________________________________________________________________
 # Api to create a user
 @api_view(["POST"])
 def create_user(request):
@@ -60,6 +67,7 @@ def login_user(request):
             # status=status.HTTP_400_BAD_REQUEST,
         )
 
+
 """
 session auth logout uses logout()
 jwt logout functionality to be added 
@@ -72,6 +80,7 @@ def logout_user(request):
 
  """
 
+
 ##BLOGS_________________________________________________________________________________________________
 @api_view(["POST"])
 @authentication_classes([JWTAuthentication])
@@ -80,7 +89,7 @@ def create_blog(request):
     data = request.data.copy()
     data["author_id"] = request.user.id
     serializer = BlogSerializer(data=data)
-    if serializer.is_valid():   
+    if serializer.is_valid():
         serializer.save()
         return Response(
             {"Status": "Success", "Message": "Blog created", "Data": serializer.data},
@@ -183,11 +192,11 @@ def update_blog(request, id):
     try:
 
         blogs = Blog.objects.get(id=id)
-       # blogs.title = title
-       # blogs.content = content
-       # blogs.save()
+        # blogs.title = title
+        # blogs.content = content
+        # blogs.save()
         ## need to pass data with serializer too
-        serializer = UpdateBlogSerializer(blogs,data=request.data)
+        serializer = UpdateBlogSerializer(blogs, data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(
@@ -205,21 +214,46 @@ def update_blog(request, id):
         )
 
 
-#COMMENTS______________________________________________________________________________________________________
+# COMMENTS______________________________________________________________________________________________________
+
+
+@api_view(["POST"])
+@authentication_classes([JWTAuthentication])
+@permission_classes([IsAuthenticated])
+def create_comment(request):
+    serializer = CreateCommentSerializer(data=request.data)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(
+            {"Status": "Success  ", "Message": "Comment added", "Data": serializer.data}
+        )
+    else:
+        return Response(
+            {"Status": "Failed", "Message": "Invalid Data", "Errors": serializer.errors}
+        )
+
 
 @api_view(["GET"])
-def view_comments_on_blog(request,id):
-    if not id:
-        return Response({"Status":"Failed","Message":"Missing id"})
+@authentication_classes([JWTAuthentication])
+@permission_classes([IsAuthenticated])
+def view_comments_on_blog(request, blog_id):
+    if not blog_id:
+        return Response({"Status": "Failed", "Message": "Missing id"})
     else:
         try:
-            blog_id=Blog.objects.get(id=id)
-            comments=Comment.objects.filter(blog=blog_id)
+            blogs = Blog.objects.get(id=blog_id)
+            comments = Comment.objects.filter(blog=blog_id)
+
             if comments.exists():
-                serializer= CommentSerializer(comments,many=True)
-                return Response({"Status":"Success","Message":"Comments found","Data":serializer.data})
-            else: 
-                return Response({"Status":"Failed","Message":"No comments on blog"})
+                commentSerializer = ViewCommentSerializer(comments, many=True)
+                return Response(
+                    {
+                        "Status": "Success",
+                        "Message": "Comments found",
+                        "Comments": commentSerializer.data,
+                    }
+                )
+            else:
+                return Response({"Status": "Success", "Message": "No comments on blog"})
         except Blog.DoesNotExist:
-            return Response({"Status":"Failed","Message":"Blog not found with id"})
-        
+            return Response({"Status": "Failed", "Message": "Blog not found"})
