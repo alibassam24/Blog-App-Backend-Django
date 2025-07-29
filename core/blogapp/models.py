@@ -29,7 +29,7 @@ class Blog(models.Model):
 
 
 class Comment(models.Model):
-    id=models.PositiveIntegerField(primary_key=True, blank=True)
+    id = models.PositiveIntegerField(primary_key=True, blank=True)
     user = models.ForeignKey(User, to_field="id", on_delete=models.CASCADE)
     blog = models.ForeignKey(Blog, to_field="id", on_delete=models.CASCADE)
     content = models.CharField(max_length=500)
