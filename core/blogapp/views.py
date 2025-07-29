@@ -139,16 +139,20 @@ def delete_blog(request, id):
         return Response({"status": "failed", "message": "missing required fields"})
     try:
         blog = Blog.objects.get(id=id)
+        if (request.user.id==blog.author_id.id):    
+            blog.delete()
+            return Response(
+            {"Status": "Success", "Message": "Blog Deleted"}, status=status.HTTP_200_OK
+            )
+        else:
+            return Response({"Status":"Failed","Message":"Permission Denied"}
+                             ,status=status.HTTP_401_UNAUTHORIZED)
     except Blog.DoesNotExist:
-        return Response(
+            return Response(
             {"Status": "Failed", "Message": "Blog not found"},
             status=status.HTTP_404_NOT_FOUND,
-        )
-    blog.delete()
-    return Response(
-        {"Status": "Success", "Message": "Blog Deleted"}, status=status.HTTP_200_OK
-    )
-
+            )
+    
 
 @api_view(["GET"])
 @permission_classes([IsAuthenticated])
@@ -205,40 +209,42 @@ def view_blogs_by_user(request):
 @permission_classes([IsAuthenticated])
 @authentication_classes([JWTAuthentication])
 def update_blog(request, id):
-    title = request.data.get("title", "")
-    if not title:
-        return Response({"status": "failed", "message": "title missing"})
-
-    content = request.data.get("content", "")
-    if not content:
-        return Response({"status": "failed", "message": "content missing"})
     try:
-
         blogs = Blog.objects.get(id=id)
-        # blogs.title = title
-        # blogs.content = content
-        # blogs.save()
-        ## need to pass data with serializer too
-        serializer = UpdateBlogSerializer(blogs, data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(
-                {
-                    "Status": "Success",
-                    "Message": "Blog updated",
-                    "Data": serializer.data,
-                },
-                status=status.HTTP_200_OK,
-            )
+        if blogs.author_id.id==request.user.id:
+            title = request.data.get("title", "")
+            if not title:
+                return Response({"status": "failed", "message": "title missing"})
+
+            content = request.data.get("content", "")
+            if not content:
+                return Response({"status": "failed", "message": "content missing"})
+                # blogs.title = title
+                # blogs.content = content
+                # blogs.save()
+                ## need to pass data with serializer too
+            serializer = UpdateBlogSerializer(blogs, data=request.data)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(
+                            {
+                            "Status": "Success",
+                            "Message": "Blog updated",
+                            "Data": serializer.data,
+                        },
+                        status=status.HTTP_200_OK,
+                    )
+            else:
+                return Response(
+                    {
+                        "Status": "Failed",
+                        "Message": "Invalid Data",
+                        "Errors": serializer.errors,
+                   },
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
         else:
-            return Response(
-                {
-                    "Status": "Failed",
-                    "Message": "Invalid Data",
-                    "Errors": serializer.errors,
-                },
-                status=status.HTTP_400_BAD_REQUEST,
-            )
+            return Response({"Status":"Failed","Message":"Permission Denied"})
     except Blog.DoesNotExist:
         return Response(
             {"Status": "Failed", "Message": "Blog not found"},
@@ -297,28 +303,37 @@ def view_comments_on_blog(request, blog_id):
 def delete_comment(request, id):
     try:
         comment = Comment.objects.get(id=id)
-        comment.delete()
-        return Response({"Status": "Success", "Message": "Comment Deleted"})
+        if comment.user.id==request.user.id:
+            comment.delete()
+            return Response({"Status": "Success", "Message": "Comment Deleted"})
+        else: 
+            return Response({"status":"failed","Message":"permission denied"})
     except:
         return Response({"Status": "Failed", "Message": "Comment not found"})
 
 
 @api_view(["PATCH"])
-# @authentication_classes([JWTAuthentication])
-# @permission_classes([IsAuthenticated])
+@authentication_classes([JWTAuthentication])
+@permission_classes([IsAuthenticated])
 def update_comment(request, id):
+    
     try:
         comment = Comment.objects.get(id=id)
-        comment.content = request.data.get("content", "")
-        serializer = UpdateCommentSerializer(comment, data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(
-                {
-                    "Status": "Success",
-                    "Message": "Comment updated",
-                    "Data": serializer.data,
-                }
-            )
+        if comment.user.id==request.user.id:
+            comment.content = request.data.get("content", "")
+            serializer = UpdateCommentSerializer(comment, data=request.data)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(
+                    {
+                        "Status": "Success",
+                        "Message": "Comment updated",
+                        "Data": serializer.data,
+                    }
+                )
+            else:
+                return Response({"Status":"Failed","Message":"Invalid Data"})
+        else:
+            return Response({"Status":"failed","Message":"permission denied"})
     except Comment.DoesNotExist:
         return Response({"Status": "Falied", "Message": "Comment not found"})
