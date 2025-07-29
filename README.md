@@ -15,8 +15,8 @@ A simple and clean RESTful Blog API built with **Django REST Framework** and **J
 - ✍️ **Blogs CRUD**  
   Create, view, update, delete blogs — but only your own blogs!
 
-- 💬 **Comments System**  
-  Add comments to any blog. Edit or delete your own comments only.
+- 💬 **Comments CRUD**  
+  Add comments to any blog. Update or delete your own comments only.
 
 - 🔍 **Search & Pagination**  
   Easily search blogs by title, and browse through pages of results.
