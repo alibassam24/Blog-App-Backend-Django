@@ -21,4 +21,14 @@ urlpatterns = [
         view_comments_on_blog,
         name="view-comments-on-blog",
     ),
+    path(
+        "update-comment/<int:id>/",
+        update_comment,
+        name="update-comment",
+    ),
+    path(
+        "delete-comment/<int:id>/",
+        delete_comment,
+        name="delete-comment",
+    ),
 ]

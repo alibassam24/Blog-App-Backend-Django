@@ -91,4 +91,18 @@ class ViewCommentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Comment
         fields = ["content", "user"]
-        read_only_field = ["created_at", "updated_at", "blog"]
+        read_only_fields = ["created_at", "updated_at", "blog"]
+
+
+class UpdateCommentSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Comment
+        fields = ["content"]
+        read_only_fields = ["created_at", "updated_at", "blog", "user"]
+
+    def validate(self, data):
+        if not data.get("content"):
+            raise serializers.ValidationError("Comment cannot be empty")
+
+        return data

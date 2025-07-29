@@ -20,6 +20,7 @@ from .serializers import (
     CreateUserSerializer,
     UpdateBlogSerializer,
     ViewCommentSerializer,
+    UpdateCommentSerializer,
 )
 
 # Create your views here.
@@ -183,7 +184,9 @@ def view_blogs_by_user(request):
         paginator = PageNumberPagination()
         page = paginator.paginate_queryset(blogs, request)
         serializer = BlogSerializer(page, many=True)
-        return paginator.get_paginated_response({"Status": "Success", "Message": "Blog Found", "Data": serializer.data})
+        return paginator.get_paginated_response(
+            {"Status": "Success", "Message": "Blog Found", "Data": serializer.data}
+        )
     # return Response({"Status":"Success","Message":"blogs found","Data":serializer.data})
     else:
         return Response({"sttatus": "failed", "message": "no blogs exist"})
@@ -286,3 +289,36 @@ def view_comments_on_blog(request, blog_id):
                 return Response({"Status": "Success", "Message": "No comments on blog"})
         except Blog.DoesNotExist:
             return Response({"Status": "Failed", "Message": "Blog not found"})
+
+
+@api_view(["DELETE"])
+@authentication_classes([JWTAuthentication])
+@permission_classes([IsAuthenticated])
+def delete_comment(request, id):
+    try:
+        comment = Comment.objects.get(id=id)
+        comment.delete()
+        return Response({"Status": "Success", "Message": "Comment Deleted"})
+    except:
+        return Response({"Status": "Failed", "Message": "Comment not found"})
+
+
+@api_view(["PATCH"])
+# @authentication_classes([JWTAuthentication])
+# @permission_classes([IsAuthenticated])
+def update_comment(request, id):
+    try:
+        comment = Comment.objects.get(id=id)
+        comment.content = request.data.get("content", "")
+        serializer = UpdateCommentSerializer(comment, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(
+                {
+                    "Status": "Success",
+                    "Message": "Comment updated",
+                    "Data": serializer.data,
+                }
+            )
+    except Comment.DoesNotExist:
+        return Response({"Status": "Falied", "Message": "Comment not found"})
