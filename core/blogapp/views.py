@@ -283,7 +283,7 @@ def view_comments_on_blog(request, blog_id):
     else:
         try:
             blogs = Blog.objects.get(id=blog_id)
-            comments = Comment.objects.filter(blog=blog_id)
+            comments = Comment.objects.filter(blog=blog_id) ##optimise using select_related 
 
             if comments.exists():
                 commentSerializer = ViewCommentSerializer(comments, many=True)
