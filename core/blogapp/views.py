@@ -275,16 +275,16 @@ def create_comment(request):
 
 
 @api_view(["GET"])
-@authentication_classes([JWTAuthentication])
-@permission_classes([IsAuthenticated])
+#@authentication_classes([JWTAuthentication])
+#@permission_classes([IsAuthenticated])
 def view_comments_on_blog(request, blog_id):
     if not blog_id:
         return Response({"Status": "Failed", "Message": "Missing id"})
     else:
         try:
-            blogs = Blog.objects.get(id=blog_id)
-            comments = Comment.objects.filter(blog=blog_id) ##optimise using select_related 
-
+            #blogs = Blog.objects.get(id=blog_id)
+            #comments = Comment.objects.filter(blog=blog_id) ##optimise using select_related 
+            comments=Comment.objects.select_related('blog').filter(blog_id=blog_id)
             if comments.exists():
                 commentSerializer = ViewCommentSerializer(comments, many=True)
                 return Response(
