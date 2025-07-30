@@ -1,6 +1,6 @@
 # 📝 Django Blog API
 
-A simple and clean RESTful Blog API built with **Django REST Framework** and **JWT Authentication**. It lets users register, log in, and manage blogs and comments — all protected with secure tokens.
+A simple and clean RESTful Blog API built with **Django REST Framework** and **JWT Authentication**. It lets users register, log in, and manage blogs and comments — all protected with secure tokens. MAKE SURE TO READ SETUP INSTRUCTIONS 
 
 ---
 
