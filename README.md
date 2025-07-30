@@ -63,12 +63,14 @@ Here’s a quick reference of all available endpoints:
 - **Django 4.x**
 - **Django REST Framework**
 - **SimpleJWT (for authentication)**
-- **SQLite (default dev DB)**
+- **Postgresql from Supabase**
 
 ---
 ## 🔧 Setup Instructions
 
 ```bash
+
+
 # Clone the repo
 git clone https://github.com/alibassam24/Blog-App-Backend-Django.git
 cd django-blog-api
@@ -80,9 +82,17 @@ source env/bin/activate  # For Windows: env\Scripts\activate
 # Install dependencies
 pip install -r requirements.txt
 
+#Create a supabase postgresql db, then make a .env file in core folder
+#make sure python-decouple is installed in your virtual environment
+#add db credentials in db file as DB_NAME, DB_HOST, DB_PORT, DB_USER, DB_PASSWORD
+#after adding .env file, Data base will be connected
+
+
 # Run migrations
 python manage.py makemigrations
 python manage.py migrate
+
+
 
 # Start development server
 python manage.py runserver
