@@ -84,7 +84,7 @@ pip install -r requirements.txt
 
 #Create a supabase postgresql db, then make a .env file in core folder
 #make sure python-decouple is installed in your virtual environment
-#add db credentials in db file as DB_NAME, DB_HOST, DB_PORT, DB_USER, DB_PASSWORD
+#add db credentials in .env file as DB_NAME, DB_HOST, DB_PORT, DB_USER, DB_PASSWORD
 #after adding .env file, Data base will be connected
 
 
