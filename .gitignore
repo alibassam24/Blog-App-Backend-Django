@@ -13,7 +13,6 @@ venv/
 .env
 
 # VSCode workspace settings
-.vscode/
 
 # Python
 *.py[cod]
@@ -40,7 +39,6 @@ staticfiles/
 .env
 
 # VS Code
-.vscode/
 
 # macOS
 .DS_Store
@@ -78,3 +76,7 @@ docs/_build/
 
 # Node (if using for frontend)
 node_modules/
+branch_structure.json
+temp_auto_push.bat
+temp_interactive_push.bat
+.gitignore
